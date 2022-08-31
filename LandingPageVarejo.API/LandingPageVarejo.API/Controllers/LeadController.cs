@@ -1,4 +1,5 @@
-﻿using LandingPageVarejo.API.Data;
+﻿using AutoMapper;
+using LandingPageVarejo.API.Data;
 using LandingPageVarejo.API.DTOS;
 using LandingPageVarejo.API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,11 @@ namespace LandingPageVarejo.API.Controllers
     public class LeadController : ControllerBase
     {
         private LeadContext _context;
-        public LeadController(LeadContext context)
+        private IMapper _mapper;
+        public LeadController(LeadContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -30,13 +33,7 @@ namespace LandingPageVarejo.API.Controllers
             Lead lead = _context.Leads.FirstOrDefault(lead => lead.Id == id);
             if(lead != null)
             {
-                ReadLeadDTO leadDTO = new ReadLeadDTO()
-                {
-                    Id = lead.Id,
-                    Nome = lead.Nome,
-                    Email = lead.Email,
-                    HoraDaConsulta = DateTime.Now
-                };
+                ReadLeadDTO leadDTO = _mapper.Map<ReadLeadDTO>(lead); 
                 return Ok(lead);
             }
             return NotFound();
@@ -45,26 +42,21 @@ namespace LandingPageVarejo.API.Controllers
         [HttpPost]
         public IActionResult AdicionarLead([FromBody] CreateLeadDTO leadDTO)
         {
-            Lead lead = new Lead()
-            {
-                Nome = leadDTO.Nome,  
-                Email = leadDTO.Email,
-            };
+            Lead lead = _mapper.Map<Lead>(leadDTO);
             _context.Leads.Add(lead);
             _context.SaveChanges();
             return CreatedAtAction(nameof(ObterLeadPorId), new { id = lead.Id }, lead);
         }
 
         [HttpPut("{id}")]
-        public IActionResult AtualizarLead(int id, [FromBody] UpdataLeadDTO novolead)
+        public IActionResult AtualizarLead(int id, [FromBody] UpdateLeadDTO novolead)
         {
             Lead lead = _context.Leads.FirstOrDefault(lead => lead.Id == id);
-            if(lead == null)
+            if (lead == null)
             {
                 return NotFound();
             }
-            lead.Nome = novolead.Nome;
-            lead.Email = novolead.Email;
+            _mapper.Map(novolead, lead);
             _context.SaveChanges();
             return NoContent();
         }

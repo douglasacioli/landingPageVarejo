@@ -2,7 +2,7 @@
 
 namespace LandingPageVarejo.API.DTOS
 {
-    public class UpdataLeadDTO
+    public class UpdateLeadDTO
     {
         [Required(ErrorMessage = "campo nome é obrigatório")]
         public string Nome { get; set; }

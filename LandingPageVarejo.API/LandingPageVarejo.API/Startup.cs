@@ -29,6 +29,7 @@ namespace LandingPageVarejo.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<LeadContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LeadConnection")));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
