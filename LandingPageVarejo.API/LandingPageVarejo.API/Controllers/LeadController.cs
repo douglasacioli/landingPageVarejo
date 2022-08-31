@@ -1,6 +1,8 @@
 ﻿using LandingPageVarejo.API.Data;
+using LandingPageVarejo.API.DTOS;
 using LandingPageVarejo.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +19,7 @@ namespace LandingPageVarejo.API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Lead> RecuperarFilmes()
+        public IEnumerable<Lead> ObterLeads()
         {
             return _context.Leads;
         }
@@ -28,21 +30,33 @@ namespace LandingPageVarejo.API.Controllers
             Lead lead = _context.Leads.FirstOrDefault(lead => lead.Id == id);
             if(lead != null)
             {
+                ReadLeadDTO leadDTO = new ReadLeadDTO()
+                {
+                    Id = lead.Id,
+                    Nome = lead.Nome,
+                    Email = lead.Email,
+                    HoraDaConsulta = DateTime.Now
+                };
                 return Ok(lead);
             }
             return NotFound();
         }
 
         [HttpPost]
-        public IActionResult AdicionarLead([FromBody] Lead lead)
+        public IActionResult AdicionarLead([FromBody] CreateLeadDTO leadDTO)
         {
+            Lead lead = new Lead()
+            {
+                Nome = leadDTO.Nome,  
+                Email = leadDTO.Email,
+            };
             _context.Leads.Add(lead);
             _context.SaveChanges();
             return CreatedAtAction(nameof(ObterLeadPorId), new { id = lead.Id }, lead);
         }
 
         [HttpPut("{id}")]
-        public IActionResult AtualizarLead(int id, [FromBody] Lead novolead)
+        public IActionResult AtualizarLead(int id, [FromBody] UpdataLeadDTO novolead)
         {
             Lead lead = _context.Leads.FirstOrDefault(lead => lead.Id == id);
             if(lead == null)
