@@ -4,6 +4,8 @@ namespace LandingPageVarejo.API.Models
 {
     public class Lead
     {
+        [Key]
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage ="campo nome é obrigatório")]
         public string Nome { get; set; }
